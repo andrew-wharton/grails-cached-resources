@@ -59,6 +59,10 @@ class HashAndCacheResourceMapper {
     boolean getFlattenDirs() {
         resourceService.getConfigParamOrDefault('flatten', true)
     }
+
+    boolean getIncludeOriginalFilename() {
+        resourceService.getConfigParamOrDefault('includeOriginalFilename', false)
+    }
     
     /**
      * Renames the given input file in the same directory to be the SHA256 hash of it's contents.
@@ -71,6 +75,11 @@ class HashAndCacheResourceMapper {
         } else {
             newName = SHA256Codec.encode(getBytes(input))
         }
+
+        if (includeOriginalFilename) {
+            newName = "${input.name}-${newName}"
+        }
+
         def parent = flattenDirs ? resourceService.workDir : input.parentFile
         def target = new File(parent, extension ? "${newName}.${extension}" : newName)
 
